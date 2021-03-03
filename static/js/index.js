@@ -23,22 +23,27 @@ $("#pitfalls-div").on("click", ".add-cond", function(event){
     var row_id = "criticality-div-" + $(this).attr('id').split("-").slice(-1)[0];
     var condition_id = $("#" + row_id).parent().prev().find("select").attr('id').split("-").slice(-1)[0];
     condition_id++;
+
+    var object_values = $.map($('#object-select-0-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
+    var pred_values = $.map($('#predicate-select-0-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
     var new_cond = "<div class='col'>\
         <div class='form-group'>\
-            <select class='form-control predicate-select' name='predicate-select-"+pitfall_count+"' id='predicate-select-"+pitfall_count+"-"+condition_id+"'>\
-                <option selected>Select predicate...</option>\
-                <option>Has attribute</option>\
-                <option>Has child</option>\
-            </select>\
+            <select class='form-control predicate-select' name='predicate-select-"+pitfall_count+"' id='predicate-select-"+pitfall_count+"-"+condition_id+"'>"
+                + pred_values.join("\n") +
+            "</select>\
         </div>\
     </div>\
     <div class='col'>\
         <div class='form-group' id='object-div-"+pitfall_count+"-"+condition_id+"'>\
-            <select class='form-control object-select' name='object-select-"+pitfall_count+"' id='object-select-"+pitfall_count+"-"+condition_id+"'>\
-                <option selected>Select object...</option>\
-                <option>ID</option>\
-                <option>Language</option>\
-            </select>\
+            <select class='form-control object-select' name='object-select-"+pitfall_count+"' id='object-select-"+pitfall_count+"-"+condition_id+"'>"
+                + object_values.join("\n") +
+            "</select>\
         </div>\
     </div>";
     $("#" + row_id).parent().before(new_cond);
@@ -54,12 +59,23 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
 
     var predicate_val = $(predicate_id).val();
     var object_select = "<select class='form-control' name='object-select-"+id.split("-")[0]+"' id='object-select-" + id + "'>";
-    console.log(predicate_val);
     var options = [];
-    if (predicate_val == "Has child")
-        options = ["Label", "Type", "Domain", "Range", "Subclass"];
+    if (predicate_val == "Has Child Element")
+        options = ["License", "Label", "Type", "Domain", "Range", "Annotation", "Relations", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
+    else if (predicate_val == "Has Attribute")
+        options = ["ID", "Language", "Namespace"];
+    else if (predicate_val == "Has File Extension")
+        options = ["Ontology(.owl/.rdf/.xml)", "Other"];
+    else if (predicate_val == "Maps to Element of Type")
+        options = ["Element", "Class", "Property", "Instance"];
+    else if (predicate_val == "Uses Comparative Operator")
+        options = ["Equality", "Inequality", "Synonymy", "Inverse"];
+    else if (predicate_val == "Uses Conjunctive Operator")
+        options = ["And", "Or", "Not"];
+    else if (predicate_val == "Has Logical Relation")
+        options = ["Validity", "Consistency", "Symmetry", "Uniqueness"];
     else
-        options = ["ID", "Language"];
+        options = ["License", "Label", "Type", "Domain", "Range", "Annotation", "Relations", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
     for (index in options)
         object_select += "<option>" + options[index] + "</option>";
     object_select += "</select>";
@@ -67,44 +83,50 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
 });
 
 $( "#add-pitfall" ).click(function() {
+    var subject_values = $.map($('#subject-select-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
+    var object_values = $.map($('#object-select-0-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
+    var pred_values = $.map($('#predicate-select-0-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
+    var priority_values = $.map($('#criticality-select-0 option') ,function(option) {
+        return "<option>" + option.value + "</option>";
+    });
+
     pitfall_count++;
     $("#pitfalls-div").append("<div class='row' id='row-" + pitfall_count + "'>\
             <div class='col'>\
                 <div class='form-group'>\
-                    <select class='form-control subject-select' name='subject-select-"+pitfall_count+"' id='subject-select-" + pitfall_count + "'>\
-                        <option selected>Select subject...</option>\
-                        <option>Classes</option>\
-                        <option>Instances</option>\
-                        <option>Properties</option>\
-                    </select>\
+                    <select class='form-control subject-select' name='subject-select-"+pitfall_count+"' id='subject-select-" + pitfall_count + "'>"
+                        + subject_values.join("\n") +
+                    "</select>\
                 </div>\
             </div>\
             <div class='col'>\
                 <div class='form-group'>\
-                    <select class='form-control predicate-select' name='predicate-select-"+pitfall_count+"' id='predicate-select-" + pitfall_count + "-0'>\
-                        <option selected>Select predicate...</option>\
-                        <option>Has attribute</option>\
-                        <option>Has child</option>\
-                    </select>\
+                    <select class='form-control predicate-select' name='predicate-select-"+pitfall_count+"' id='predicate-select-" + pitfall_count + "-0'>"
+                        + pred_values.join("\n") +   
+                    "</select>\
                 </div>\
             </div>\
             <div class='col'>\
                 <div class='form-group' id='object-div-" + pitfall_count + "-0'>\
-                    <select class='form-control object-select' name='object-select-"+pitfall_count+"' id='object-select-" + pitfall_count + "-0'>\
-                        <option selected>Select object...</option>\
-                        <option>ID</option>\
-                        <option>Language</option>\
-                    </select>\
+                    <select class='form-control object-select' name='object-select-"+pitfall_count+"' id='object-select-" + pitfall_count + "-0'>"
+                        + object_values.join("\n") +
+                    "</select>\
                 </div>\
             </div>\
             <div class='col'>\
                 <div class='form-group' id='criticality-div-" + pitfall_count + "'>\
-                    <select class='form-control criticality-select' name='criticality-select-"+pitfall_count+"' id='criticality-select-" + pitfall_count + "-0'>\
-                        <option selected>Select rule priority...</option>\
-                        <option>Critical</option>\
-                        <option>Intermediate</option>\
-                        <option>Minor</option>\
-                    </select>\
+                    <select class='form-control criticality-select' name='criticality-select-"+pitfall_count+"' id='criticality-select-" + pitfall_count + "-0'>"
+                        + priority_values.join("\n") +
+                    "</select>\
                 </div>\
             </div>\
             <div class='buttons-div' id='buttons-div-" + pitfall_count + "'>\
