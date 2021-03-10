@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand">Pitfalls Summary</a>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Terminology Introduction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Examples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+    </nav>
+    
+    <table style="width: 100%; margin: 20px; text-align: center;">
+        <thead style="text-transform: uppercase">
+            <tr style="height: 40px">
+                <th>Criticality</th>
+                <th>Error Element</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pitfall in pitfalls %}
+            <tr>
+                {% if pitfall[0] == "High" %}
+                    <td style="color: red; width: 20%">CRITICAL</td>
+                {% elif pitfall[0] == "Medium" %}
+                    <td style="color: yellow; width: 20%">MODERATE</td>
+                {% else %}
+                    <td style="color: green;  width: 20%">LIGHT</td>
+                {% endif %}
+                <td style="display: block">{{ pitfall[1] }}</td>
+            </tr>
+                
+            {% endfor %}        
+        </tbody>
+        
+        
+    </table>
+    
+</body>
+</html>

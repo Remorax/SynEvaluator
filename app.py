@@ -32,7 +32,7 @@ def show_results():
             pitfalls_dict[ontology_name] = curr_pitfalls
 
     
-    return render_template("index.html")
+    return render_template("results.html")
 
 # A welcome message to test our server
 @app.route('/')

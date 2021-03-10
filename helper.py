@@ -8,8 +8,8 @@ from itertools import product
 import numpy as np
 from nltk.corpus import wordnet as wn
 
-model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
-nlp = spacy.load("en_core_web_sm")
+model = None
+nlp = None
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 def camel_case_split(identifier):
@@ -17,6 +17,8 @@ def camel_case_split(identifier):
     return " ".join([m.group(0).lower() for m in matches])
 
 def USE_embeddings(words):
+	if not model:
+		model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
 	return model(words)
 
 def equality(ontology, a, b):
@@ -56,6 +58,9 @@ def synonymy(ontology, a, b):
 	return cosine_similarity(*USE_embeddings([a,b])) > 0.6
 
 def inverse_checker(a, b):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")
 	a_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(a).split("_")))) if elem.pos_[:2] == "NN"]
 	b_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(b).split("_")))) if elem.pos_[:2] == "NN"]
 	return set(a_nouns) == set(b_nouns)
@@ -79,6 +84,9 @@ def inverse(ontology, a, b):
 	return inverse_checker(*tup)
 
 def text_validity(ontology, elements):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")
 	if type(elements) == minidom.Element:
 		elements = [elements]
 	if type(elements) == list:
@@ -126,6 +134,9 @@ def id_consistency(ontology, elements):
 	return True
 
 def text_symmetry(ontology, elements):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
@@ -150,6 +161,9 @@ def is_polyseme(word):
 	return len(wn.synsets(word)) > 1
 
 def contains_polysemes(ontology, elements):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")	
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
@@ -163,6 +177,9 @@ def contains_polysemes(ontology, elements):
 	return False
 
 def contains_conjunctions(ontology, elements):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
@@ -176,6 +193,9 @@ def contains_conjunctions(ontology, elements):
 	return False
 
 def contains_misc_items(ontology, elements):
+	global nlp
+	if not nlp:
+		nlp = spacy.load("en_core_web_sm")
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:

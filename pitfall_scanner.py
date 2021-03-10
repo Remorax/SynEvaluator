@@ -5,7 +5,7 @@ import os
 
 def sort_compare(key):
 	importance_dict = {"High": 3, "Medium": 2, "Low": 1 }
-	return importance_dict[key[1]]
+	return importance_dict[key[0]]
 
 class PitfallScanner():
 	"""docstring for PitfallScanner"""
@@ -125,8 +125,8 @@ class PitfallScanner():
 			self.subject_elements = self.ontology.get_elements(mapped_subject)
 			self.pred_obj_list = list(zip(Predicate, Object))
 			results = [self.parse(0, len(self.pred_obj_list), [subject]) for subject in self.subject_elements]
-			error_elements = [elem for elem in results if not elem]
-			results.append((idx, imp, error_elements))
+			error_elements = [self.ontology.extract_ID(elem) for elem in results if not elem]
+			results.append((imp, error_elements))
 
 		results.sort(key=sort_compare, reverse=True)	 
 		return results
