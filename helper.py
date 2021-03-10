@@ -79,18 +79,20 @@ def inverse(ontology, a, b):
 	return inverse_checker(*tup)
 
 def text_validity(ontology, elements):
+	if type(elements) == minidom.Element:
+		elements = [elements]
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
 				element_tokens = [token.lower() for token in nlp(element.firstChild.nodeValue)]
 				ID_tokens = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"]
-				if not set(element_tokens).intersection(set(ID_tokens)):
-					return False
+				if set(element_tokens).intersection(set(ID_tokens)):
+					return True
 				continue 
 			if element.startswith("http://") or element.startswith("https://"):
 				if not validators.url(element):
 					return False
-		return True
+		return False
 	elif type(elements) == str:
 		if elements.startswith("http://") or elements.startswith("https://"):
 			return validators.url(elements)
@@ -103,6 +105,8 @@ def is_underscored_string(s):
 	return len([char for char in s.split("_") if char]) > 1
 
 def id_consistency(ontology, elements):
+	if type(elements) == minidom.Element:
+		elements = [elements]
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
@@ -119,21 +123,6 @@ def id_consistency(ontology, elements):
 						elem_id = ontology.extract_ID(elem)
 						if is_underscored_string(elem_id):
 							return False
-		return True
-	elif type(elements) == minidom.Element:
-		element_id = ontology.extract_ID(elements)
-		if is_underscored_string(element_id):
-			all_elems = ontology.get_elements({"Elements": elements.tagName})
-			for elem in all_elems:
-				elem_id = ontology.extract_ID(elem)
-				if not is_underscored_string(elem_id) and is_camel_case(elem_id):
-					return False
-		elif is_camel_case(element_id):
-			all_elems = ontology.get_elements({"Elements": elements.tagName})
-			for elem in all_elems:
-				elem_id = ontology.extract_ID(elem)
-				if is_underscored_string(elem_id):
-					return False
 	return True
 
 def text_symmetry(ontology, elements):
@@ -186,7 +175,7 @@ def contains_conjunctions(ontology, elements):
 		return any([elem.text.lower() in ["and", "or"] for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
 	return False
 
-def contains_conjunctions(ontology, elements):
+def contains_misc_items(ontology, elements):
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
@@ -205,21 +194,32 @@ def and_operator(a, b):
 def or_operator(a, b):
 	return a or b
 
-def extract_child_element(ontology, parents, child_tag):
+def extract_related_element(ontology, parents, child_tag):
+	if type(parents) != list:
+		parents = [parents]
 	return flatten([ontology.get_child_node(parent, child_tag["Elements"]) for parent in parents])
 
 def extract_attribute(ontology, elements, attribute_tag):
-	return flatten([ontology.get_attribute(element, attribute_tag["Elements"]) for element in elements])
+	if type(elements) != list:
+		elements = [elements]
+	final_list = flatten([ontology.get_attribute(element, attribute_tag["Elements"]) for element in elements])
+	if "Mappable" not in attribute_tag:
+		return final_list
+	return attribute_tag["Mappable"](final_list, attribute_tag["Arguments"])
 
 def extract_extension(ontology, labels, allowed_extensions):
+	if type(labels) != list:
+		labels = [labels]
 	final_list = []
 	for label in labels:
 		extension = label.split(".")[-1]
 		if not allowed_extensions["Elements"] or extension in allowed_extensions["Elements"]:
-			return True
-	return False
+			final_list.append(extension)
+	return final_list
 
 def extract_corresponding_element(ontology, elements, element_type):
+	if type(elements) != list:
+		elements = [elements]
 	final_list = []
 	for element in elements:
 		for elem in ontology.get_elements(element_type):
@@ -227,12 +227,15 @@ def extract_corresponding_element(ontology, elements, element_type):
 				final_list.extend(elem)
 	return final_list
 
-def execute_comparison(ontology, operator, lhs, rhs):
+def execute_comparative_operator(ontology, operator, lhs, rhs):
 	return operator(ontology, lhs, rhs)
 
-def execute_conjunction(operator, lhs, rhs):
+def execute_logical_operator(ontology, operator, lhs, rhs):
 	return operator(lhs, rhs)
 
-def execute_logical_relation(ontology, elements, function):
-	return function(ontology, elements["Elements"])
+def execute_ontological_relation(ontology, elements, function):
+	return function(ontology, elements)
+
+def execute_linguistic_relation(ontology, elements, function):
+	return function(ontology, elements)
 

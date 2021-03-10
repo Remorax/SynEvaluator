@@ -60,8 +60,10 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
     var predicate_val = $(predicate_id).val();
     var object_select = "<select class='form-control' name='object-select-"+id.split("-")[0]+"' id='object-select-" + id + "'>";
     var options = [];
-    if (predicate_val == "Has Child Element")
-        options = ["License", "Label", "Type", "Domain", "Range", "Annotation", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
+    if (predicate_val == "Has Related Element")
+        options = ["Type", "Domain", "Range", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
+    else if (predicate_val == "Has Descriptive Element")
+        options = ["License", "Annotation", "Label", "Comment"];
     else if (predicate_val == "Has Attribute")
         options = ["ID", "Language", "Defined Namespace", "Used Namespace"];
     else if (predicate_val == "Has File Extension")
@@ -77,7 +79,7 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
     else if (predicate_val == "Has Linguistic Property")
         options = ["Contains Polysemes", "Contains Conjunctions", "Contains Misc Items"];
     else
-        options = ["License", "Label", "Type", "Domain", "Range", "Annotation", "Relations", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
+        options = ["Type", "Domain", "Range", "Subclass", "Is Relation", "Inverse Relation", "Equivalent Property", "Equivalent Class", "Disjoint Class", "Property Chain Axiom"];
     for (index in options)
         object_select += "<option>" + options[index] + "</option>";
     object_select += "</select>";

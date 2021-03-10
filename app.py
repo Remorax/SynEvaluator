@@ -5,9 +5,9 @@ app = Flask(__name__)
 
 @app.route('/results', methods = ['POST'])
 def show_results():
-	i, all_pitfalls = 0, []
+    i, all_pitfalls = 0, []
 
-	file = request.files["file"]
+    file = request.files["file"]
     if not file.filename:
         return jsonify([])
     

@@ -115,7 +115,7 @@ class Ontology():
             final_list.extend(curr_elements)
         return final_list
 
-    def extract_namespace(self, all_elements, arguments):
+    def extract_namespace(self, all_elements, arguments=[]):
         if type(all_elements) != list:
             return all_elements.split("#")[0]
         return [element.split("#")[0] for element in all_elements]
@@ -127,7 +127,7 @@ class Ontology():
             element: DOM parent element
             tag: Name of tag of child/List of name tags
         Returns:
-            DOM child element 
+            DOM Related Element 
         '''
         if type(tag) == list:
             return [e for e in element._get_childNodes() if type(e)==minidom.Element and e._get_tagName() in tag]
@@ -166,6 +166,8 @@ class Ontology():
         Returns ID for a parsed DOM element. In ontologies where classes are represented by 
         numerical IDs, it returns the label (stored in mapping_dict)
         '''
+        if not element:
+            return ""
         element_id = element.getAttribute("rdf:ID") or element.getAttribute("rdf:resource") or element.getAttribute("rdf:about")
         element_id = element_id.split("#")[-1].split(";")[-1]
         if extract_label and element_id in self.mapping_dict:
