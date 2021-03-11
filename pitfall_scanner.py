@@ -4,7 +4,8 @@ from glob import glob
 import os
 
 def sort_compare(key):
-	importance_dict = {"High": 3, "Medium": 2, "Low": 1 }
+	importance_dict = {"Critical": 3, "Intermediate": 2, "Minor": 1 }
+	print (key)
 	return importance_dict[key[0]]
 
 class PitfallScanner():
@@ -74,7 +75,8 @@ class PitfallScanner():
 			"Synonymy": synonymy,
 			"Inverse": inverse,
 			"And": and_operator,
-			"Or": or_operator
+			"Or": or_operator,
+			"Not": not_operator
 		}
 
 		self.property_to_function = {
@@ -89,7 +91,7 @@ class PitfallScanner():
 
 		self.criticality_to_element = {"Critical": "High", "Intermediate": "Medium", "Minor": "Low"}
 
-	def parse(self, results, start, end):
+	def parse(self, start, end, results):
 		subject = results
 		for i in range(start, end):
 			curr_pred, curr_obj = self.pred_obj_list[i]
@@ -109,7 +111,7 @@ class PitfallScanner():
 				continue
 
 			if statement_type == "Comparative":
-				results = mapped_pred(self.ontology, mapped_object, results, self.parse(subject, start+1, end))
+				results = mapped_pred(self.ontology, mapped_object, results, self.parse(start+1, end, subject))
 			else:
 				results = mapped_pred(self.ontology, results, mapped_object)
 		return results
@@ -124,9 +126,9 @@ class PitfallScanner():
 				continue
 			self.subject_elements = self.ontology.get_elements(mapped_subject)
 			self.pred_obj_list = list(zip(Predicate, Object))
-			results = [self.parse(0, len(self.pred_obj_list), [subject]) for subject in self.subject_elements]
-			error_elements = [self.ontology.extract_ID(elem) for elem in results if not elem]
-			results.append((imp, error_elements))
-
+			curr_results = [self.parse(0, len(self.pred_obj_list), [subject]) for subject in self.subject_elements]
+			error_elements = [self.ontology.extract_ID(self.subject_elements[i]) for i,elem in enumerate(curr_results) if not elem]
+			results.append((Criticality, error_elements))
+			print (Criticality)
 		results.sort(key=sort_compare, reverse=True)	 
 		return results

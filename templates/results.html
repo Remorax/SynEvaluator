@@ -36,9 +36,9 @@
         <tbody>
             {% for pitfall in pitfalls %}
             <tr>
-                {% if pitfall[0] == "High" %}
+                {% if pitfall[0] == "Critical" %}
                     <td style="color: red; width: 20%">CRITICAL</td>
-                {% elif pitfall[0] == "Medium" %}
+                {% elif pitfall[0] == "Intermediate" %}
                     <td style="color: yellow; width: 20%">MODERATE</td>
                 {% else %}
                     <td style="color: green;  width: 20%">LIGHT</td>

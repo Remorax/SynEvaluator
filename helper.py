@@ -214,6 +214,9 @@ def and_operator(a, b):
 def or_operator(a, b):
 	return a or b
 
+def not_operator(a, b):
+	return not b
+
 def extract_related_element(ontology, parents, child_tag):
 	if type(parents) != list:
 		parents = [parents]

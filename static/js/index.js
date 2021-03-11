@@ -73,7 +73,7 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
     else if (predicate_val == "Uses Comparative Operator")
         options = ["Equality", "Inequality", "Synonymy", "Inverse"];
     else if (predicate_val == "Uses Conjunctive Operator")
-        options = ["And", "Or"];
+        options = ["And", "Or", "Not"];
     else if (predicate_val == "Has Logical Property")
         options = ["Text Validity", "ID Consistency", "Text Symmetry", "Uniqueness"];
     else if (predicate_val == "Has Linguistic Property")

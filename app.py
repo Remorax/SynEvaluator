@@ -6,8 +6,8 @@ app = Flask(__name__)
 @app.route('/results', methods = ['POST'])
 def show_results():
     i, all_pitfalls = 0, []
-
-    file = request.files["file"]
+    print (request.files)
+    file = request.files["input-b2"]
     if not file.filename:
         return jsonify([])
     
@@ -21,18 +21,17 @@ def show_results():
 
     ontology = os.path.abspath(os.path.join("temp/", file.filename))
     file.save(ontology)
-    if not pitfalls_dict or not final_data:
-        for ontology in ontologies:
-            scanner = PitfallScanner(ontology, all_pitfalls)
-            curr_pitfalls = scanner.scan()
-            counts = {"High": 0, "Medium": 0, "Low": 0}
-            counts.update(Counter([el[0] for el in curr_pitfalls]))
-            ontology_name = '.'.join(ontology.split('/')[-1].split('.')[:-1])
-            final_data.append((ontology_name, list(counts.values())))
-            pitfalls_dict[ontology_name] = curr_pitfalls
+        # for ontology in ontologies:
+    scanner = PitfallScanner(ontology, all_pitfalls)
+    curr_pitfalls = scanner.scan()
+            # counts = {"High": 0, "Medium": 0, "Low": 0}
+            # counts.update(Counter([el[0] for el in curr_pitfalls]))
+            # ontology_name = '.'.join(ontology.split('/')[-1].split('.')[:-1])
+            # final_data.append((ontology_name, list(counts.values())))
+            # pitfalls_dict[ontology_name] = curr_pitfalls
 
     
-    return render_template("results.html")
+    return render_template("results.html", pitfalls=curr_pitfalls)
 
 # A welcome message to test our server
 @app.route('/')

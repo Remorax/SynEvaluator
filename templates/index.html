@@ -29,20 +29,20 @@
         <a class="navbar-brand">Ontology Evaluator</a>
     </nav>
 
-    <div style="margin: 20px">
-        <input id="upload-ontology-btn" name="input-b2" type="file" class="file" data-browse-on-zone-click="true" data-show-upload="false" data-msg-placeholder="Upload ontology here..." data-show-preview="false">
-    
-    </div>
-    
 
-
-    <div class="float-right my-3 mx-4">
-        <button type="button" class="btn btn-success" id="add-pitfall">
-            <i class="fa fa-plus" aria-hidden="true"></i> Add pitfall 
-        </button>
-    </div>
-    <br><br><br>
     <form action="/results" method="post" enctype="multipart/form-data">
+        <div style="margin: 20px">
+            <input id="upload-ontology-btn" name="input-b2" type="file" class="file" data-browse-on-zone-click="true" data-show-upload="false" data-msg-placeholder="Upload ontology here..." data-show-preview="false">
+        </div>
+        
+
+
+        <div class="float-right my-3 mx-4">
+            <button type="button" class="btn btn-success" id="add-pitfall">
+                <i class="fa fa-plus" aria-hidden="true"></i> Add pitfall 
+            </button>
+        </div>
+        <br><br><br>
         <div class="container" id="pitfalls-div" style="margin: 0px; max-width: 1420px">
             <div class="row" id="row-0">
                 <div class="col">
