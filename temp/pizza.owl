@@ -2203,7 +2203,8 @@ This is an example ontology that contains all constructs required for the variou
 
     <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping -->
 
-    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#SlicedTomatoTopping">
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#End">
+        <owl:equivalentClass rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Finish"/>
         <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
         <rdfs:subClassOf>
             <owl:Restriction>

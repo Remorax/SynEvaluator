@@ -1,6 +1,6 @@
 import tensorflow_hub as hub
 from scipy.spatial.distance import cosine
-from re import finditer
+from re import finditer, split
 from xml.dom import minidom
 import validators, spacy
 from inflection import camelize
@@ -8,7 +8,6 @@ from itertools import product
 import numpy as np
 from nltk.corpus import wordnet as wn
 
-model = None
 nlp = None
 flatten = lambda l: [item for sublist in l for item in sublist]
 
@@ -16,13 +15,8 @@ def camel_case_split(identifier):
     matches = finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', identifier)
     return " ".join([m.group(0).lower() for m in matches])
 
-def USE_embeddings(words):
-	if not model:
-		model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
-	return model(words)
-
 def equality(ontology, a, b):
-	if type(a) != type(b):
+	if type(a) != type(b) or not a or not b:
 		return False
 	if type(a) == list:
 		if type(a[0]) == minidom.Element or type(b[0]) == minidom.Element:
@@ -37,11 +31,20 @@ def inequality(ontology, a, b):
 	return not equality(ontology, a,b)
 
 def cartesian_np(x,y):
-	return numpy.transpose([numpy.tile(x, len(y)), numpy.repeat(y, len(x))])
+	return np.transpose([np.tile(x, len(y)), np.repeat(y, len(x))])
+
+def is_synonym(x,y):
+	for syn in wn.synsets(x):
+		for l in syn.lemmas():
+			if camel_case_split(" ".join(l.name().lower().split("_"))) == camel_case_split(" ".join(y.lower().split("_"))):
+				return True
+	return False
 
 def synonymy(ontology, a, b):
 	if type(a) != type(b):
 		return False
+	if not a or not b:
+		return True
 	if type(a) == list:
 		if type(a[0]) == minidom.Element:
 			a = [camel_case_split(" ".join(ontology.extract_ID(elem_a).split("_"))) for elem_a in a]
@@ -49,25 +52,45 @@ def synonymy(ontology, a, b):
 			b = [camel_case_split(" ".join(ontology.extract_ID(elem_b).split("_"))) for elem_b in b]
 		if type(a[0])!=str or type(b[0])!=str:
 			return False
-		for tup in cartesian_np(USE_embeddings(a), USE_embeddings(b)):
-			if cosine_similarity(*tup) > 0.6:
+		for tup in cartesian_np(a, b):
+			if is_synonym(*tup):
 				return True
 		return False
 	if type(a) != str or type(b)!= str:
 		return False
-	return cosine_similarity(*USE_embeddings([a,b])) > 0.6
+	return is_synonym(camel_case_split(" ".join(a.split("_"))), camel_case_split(" ".join(b.split("_"))))
 
-def inverse_checker(a, b):
+def dissimilarity(ontology, a, b):
+	if type(a) != type(b) or not a or not b:
+		return True
+	if type(a) == list:
+		if type(a[0]) == minidom.Element:
+			a = [camel_case_split(" ".join(ontology.extract_ID(elem_a).split("_"))) for elem_a in a]
+		if type(b[0]) == minidom.Element:
+			b = [camel_case_split(" ".join(ontology.extract_ID(elem_b).split("_"))) for elem_b in b]
+		if type(a[0])!=str or type(b[0])!=str:
+			return True
+		for tup in cartesian_np(a, b):
+			if is_synonym(*tup):
+				return False
+		return True
+	if type(a) != str or type(b)!= str:
+		return True
+	return not is_synonym(camel_case_split(" ".join(a.split("_"))), camel_case_split(" ".join(b.split("_"))))
+
+def inverse_checker(ontology, a, b):
 	global nlp
 	if not nlp:
 		nlp = spacy.load("en_core_web_sm")
-	a_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(a).split("_")))) if elem.pos_[:2] == "NN"]
-	b_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(b).split("_")))) if elem.pos_[:2] == "NN"]
+	a_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(a.split("_")))) if elem.pos_ in ["NOUN", "PROPN"]]
+	b_nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(b.split("_")))) if elem.pos_ in ["NOUN", "PROPN"]]
 	return set(a_nouns) == set(b_nouns)
 
 def inverse(ontology, a, b):
 	if type(a) != type(b):
 		return False
+	if not a or not b:
+		return True
 	if type(a) == list:
 		if type(a[0]) == minidom.Element:
 			a = [camel_case_split(" ".join(ontology.extract_ID(elem_a).split("_"))) for elem_a in a]
@@ -75,32 +98,39 @@ def inverse(ontology, a, b):
 			b = [camel_case_split(" ".join(ontology.extract_ID(elem_b).split("_"))) for elem_b in b]
 		if type(a[0])!=str or type(b[0])!=str:
 			return False
-		for tup in itertools.product(a,b):
-			if inverse_checker(*tup):
+		for tup in product(a,b):
+			if inverse_checker(ontology, *tup):
 				return True
 		return False
 	if type(a) != str or type(b)!= str:
 		return False
-	return inverse_checker(*tup)
+	return inverse_checker(ontology, *tup)
 
 def text_validity(ontology, elements):
 	global nlp
 	if not nlp:
 		nlp = spacy.load("en_core_web_sm")
+	if not elements:
+		return True
 	if type(elements) == minidom.Element:
 		elements = [elements]
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
-				element_tokens = [token.lower() for token in nlp(element.firstChild.nodeValue)]
-				ID_tokens = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"]
-				if set(element_tokens).intersection(set(ID_tokens)):
-					return True
-				continue 
-			if element.startswith("http://") or element.startswith("https://"):
-				if not validators.url(element):
+				if not element.firstChild:
 					return False
-		return False
+				element_tokens = [token.lemma_.lower() for token in nlp(camel_case_split(" ".join(element.firstChild.nodeValue.split("_"))))]
+				ID_tokens = [elem.lemma_.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element.parentNode).split("_"))))]
+				if not set(element_tokens).intersection(set(ID_tokens)):
+					return False
+				# continue 
+
+			elif type(element) == str:
+				if element.startswith("http://") or element.startswith("https://") and not validators.url(element):
+					return False
+			else:
+				print ("Exceptional type", type(element))
+		return True
 	elif type(elements) == str:
 		if elements.startswith("http://") or elements.startswith("https://"):
 			return validators.url(elements)
@@ -113,6 +143,8 @@ def is_underscored_string(s):
 	return len([char for char in s.split("_") if char]) > 1
 
 def id_consistency(ontology, elements):
+	if not elements:
+		return True
 	if type(elements) == minidom.Element:
 		elements = [elements]
 	if type(elements) == list:
@@ -135,46 +167,71 @@ def id_consistency(ontology, elements):
 
 def text_symmetry(ontology, elements):
 	global nlp
+	if not elements:
+		return True
 	if not nlp:
 		nlp = spacy.load("en_core_web_sm")
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
-				nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"]
+				nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_ in ["NOUN", "PROPN"]]
 				if nouns[0]==nouns[-1]:
 					return True
 		return False
 	elif type(elements) == str:
-		nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(elements.split("_")))) if elem.pos_[:2] == "NN"]
+		nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(elements.split("_")))) if elem.pos_ in ["NOUN", "PROPN"]]
 		return nouns[0]==nouns[-1]
 	elif type(elements) == minidom.Element:
-		nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(elements).split("_")))) if elem.pos_[:2] == "NN"]
+		nouns = [elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(elements).split("_")))) if elem.pos_ in ["NOUN", "PROPN"]]
 		return nouns[0]==nouns[-1]
 	return True
 
 def uniqueness(ontology, elements):
 	if type(elements) == list:
-		return len([elem for elem in elements if elem]) == 1
+		return len([elem for elem in elements if elem]) <= 1
 	return True
+
+def is_empty_str(word):
+	if type(word)!=str:
+		return False
+	return word.strip()
 
 def is_polyseme(word):
 	return len(wn.synsets(word)) > 1
 
 def contains_polysemes(ontology, elements):
+
 	global nlp
 	if not nlp:
 		nlp = spacy.load("en_core_web_sm")	
 	if type(elements) == list:
+
 		for element in elements:
 			if type(element) == minidom.Element:
-				return any([is_polyseme(elem.text.lower()) for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
+				if is_polyseme(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))):
+					return True
 			elif type(element) == str:
-				return any([is_polyseme(elem.text.lower()) for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == minidom.Element:
-		return any([is_polyseme(elem.text.lower()) for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == str:
-		return any([is_polyseme(elem.text.lower()) for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
+				if is_polyseme(camel_case_split(" ".join(element.split("_")))):
+					return True
+		return False
+	elif type(elements) == minidom.Element:
+		return is_polyseme(camel_case_split(" ".join(ontology.extract_ID(elements).split("_"))))
+	elif type(elements) == str:
+		return is_polyseme(camel_case_split(" ".join(elements.split("_"))))
 	return False
+
+def has_multiple_elements(word):
+	all_elems, curr_elems = [], []
+	for elem in camel_case_split(" ".join(word.split("_"))).split():
+		if elem in ["and", "or"]:
+			if curr_elems:
+				all_elems.append(" ".join(curr_elems))
+			curr_elems = []
+		else:
+			curr_elems.append(elem)
+	if curr_elems:
+		all_elems.append(" ".join(curr_elems))
+	return len(all_elems) > 1
 
 def contains_conjunctions(ontology, elements):
 	global nlp
@@ -183,13 +240,17 @@ def contains_conjunctions(ontology, elements):
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
-				return any([elem.text.lower() in ["and", "or"] for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
+				
+				if has_multiple_elements(ontology.extract_ID(element)):
+					return True
 			elif type(element) == str:
-				return any([elem.text.lower() in ["and", "or"] for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == minidom.Element:
-		return any([elem.text.lower() in ["and", "or"] for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == str:
-		return any([elem.text.lower() in ["and", "or"] for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
+				if has_multiple_elements(element):
+					return True
+		return False
+	elif type(elements) == minidom.Element:
+		return has_multiple_elements(ontology.extract_ID(elements))
+	elif type(elements) == str:
+		return has_multiple_elements(elements)
 	return False
 
 def contains_misc_items(ontology, elements):
@@ -199,13 +260,13 @@ def contains_misc_items(ontology, elements):
 	if type(elements) == list:
 		for element in elements:
 			if type(element) == minidom.Element:
-				return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
+				return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_ in ["NOUN", "PROPN"]])
 			elif type(element) == str:
-				return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == minidom.Element:
-		return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(element).split("_")))) if elem.pos_[:2] == "NN"])
-	elif type(element) == str:
-		return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_[:2] == "NN"])
+				return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(element.split("_")))) if elem.pos_ in ["NOUN", "PROPN"]])
+	elif type(elements) == minidom.Element:
+		return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(ontology.extract_ID(elements).split("_")))) if elem.pos_ in ["NOUN", "PROPN"]])
+	elif type(elements) == str:
+		return any(["misc" in elem.text.lower() for elem in nlp(camel_case_split(" ".join(elements.split("_")))) if elem.pos_ in ["NOUN", "PROPN"]])
 	return False
 
 def and_operator(a, b):
@@ -247,7 +308,7 @@ def extract_corresponding_element(ontology, elements, element_type):
 	for element in elements:
 		for elem in ontology.get_elements(element_type):
 			if ontology.extract_ID(elem) == ontology.extract_ID(element):
-				final_list.extend(elem)
+				final_list.append(elem)
 	return final_list
 
 def execute_comparative_operator(ontology, operator, lhs, rhs):

@@ -1,4 +1,19 @@
 var pitfall_count = 0;
+var subject_values = $.map($('#subject-select-0 option') ,function(option) {
+    return "<option>" + option.value + "</option>";
+});
+
+var object_values = $.map($('#object-select-0-0 option') ,function(option) {
+    return "<option>" + option.value + "</option>";
+});
+
+var pred_values = $.map($('#predicate-select-0-0 option') ,function(option) {
+    return "<option>" + option.value + "</option>";
+});
+
+var priority_values = $.map($('#criticality-select-0 option') ,function(option) {
+    return "<option>" + option.value + "</option>";
+});
 
 $("#actions-header").width($("#buttons-div-0").width()); 
 
@@ -23,14 +38,6 @@ $("#pitfalls-div").on("click", ".add-cond", function(event){
     var row_id = "criticality-div-" + $(this).attr('id').split("-").slice(-1)[0];
     var condition_id = $("#" + row_id).parent().prev().find("select").attr('id').split("-").slice(-1)[0];
     condition_id++;
-
-    var object_values = $.map($('#object-select-0-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
-
-    var pred_values = $.map($('#predicate-select-0-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
 
     var new_cond = "<div class='col'>\
         <div class='form-group'>\
@@ -71,10 +78,10 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
     else if (predicate_val == "Maps to Element of Type")
         options = ["Element", "Class", "Property", "Instance"];
     else if (predicate_val == "Uses Comparative Operator")
-        options = ["Equality", "Inequality", "Synonymy", "Inverse"];
-    else if (predicate_val == "Uses Conjunctive Operator")
+        options = ["Equality", "Inequality", "Synonymy", "Dissimilarity", "Inverse"];
+    else if (predicate_val == "Uses Logical Operator")
         options = ["And", "Or", "Not"];
-    else if (predicate_val == "Has Logical Property")
+    else if (predicate_val == "Has Ontological Property")
         options = ["Text Validity", "ID Consistency", "Text Symmetry", "Uniqueness"];
     else if (predicate_val == "Has Linguistic Property")
         options = ["Contains Polysemes", "Contains Conjunctions", "Contains Misc Items"];
@@ -87,21 +94,6 @@ $("#pitfalls-div").on("change", ".predicate-select", function(event){
 });
 
 $( "#add-pitfall" ).click(function() {
-    var subject_values = $.map($('#subject-select-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
-
-    var object_values = $.map($('#object-select-0-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
-
-    var pred_values = $.map($('#predicate-select-0-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
-
-    var priority_values = $.map($('#criticality-select-0 option') ,function(option) {
-        return "<option>" + option.value + "</option>";
-    });
 
     pitfall_count++;
     $("#pitfalls-div").append("<div class='row' id='row-" + pitfall_count + "'>\
@@ -137,7 +129,6 @@ $( "#add-pitfall" ).click(function() {
                 <button type='button' class='add-cond btn btn-success' id='add-cond-" + pitfall_count + "'>\
                     <i class='fa fa-plus'></i>&nbsp; Add condition\
                 </button>\
-                &nbsp;\
                 <button type='button' class='delete btn btn-danger' id='delete-" + pitfall_count + "'>\
                     <i class='fa fa-trash'></i>&nbsp; Delete\
                 </button>\
@@ -145,3 +136,14 @@ $( "#add-pitfall" ).click(function() {
         </div>");
 });
 
+// Insert inside buttons-div
+// <div class='dropdown' style='display: inline'>\
+//                     <button class='btn btn-success dropdown-toggle' type='button' data-toggle='dropdown' id='add-cond-" + pitfall_count + "' aria-haspopup='true' aria-expanded='false'>\
+//                         <i class='fa fa-plus'></i>&nbsp; Add condition <span class='caret'></span>\
+//                     </button>\
+//                     <ul class='dropdown-menu' aria-labelledby='add-cond-" + pitfall_count + "'>\
+//                         <li id='add-eclause-" + pitfall_count + "'><a class='dropdown-item' href='#'>Extractive Clause</a></li>\
+//                         <li id='add-fclause-" + pitfall_count + "'><a class='dropdown-item' href='#'>Functional Clause</a></li>\
+//                         <li id='add-operator-" + pitfall_count + "'><a class='dropdown-item' href='#'>Operator Expression</a></li>\
+//                     </ul>\
+//                 </div>\

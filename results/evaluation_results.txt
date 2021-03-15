@@ -1,0 +1,5 @@
+P1: 
+
+Security: ['Contract', 'Notebook', 'Person', 'Reputation', 'Role', 'Server', 'Window', 'Building', 'English', 'Fire', 'Flood', 'High', 'Low', 'Medium', 'None', 'Overheating', 'Sabotage', 'Switch']
+
+Pizza: ['American', 'Country', 'Food', 'Hot', 'Medium', 'Mild', 'Mushroom', 'Soho', 'Spiciness']

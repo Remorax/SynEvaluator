@@ -87,15 +87,16 @@ class Ontology():
         '''
         if type(attribute) == list:
             ret = [element.attributes.get(attrib, "") for attrib in attribute]
-            return [el for el in ret if el]
-        return [element.attributes.get(attribute, "")]
+            return [el.firstChild.nodeValue for el in ret if el]
+        return [element.attributes.get(attribute, "").firstChild.nodeValue]
 
     def check_child_attribute(self, all_elements, restrictions):
         for restriction in restrictions:
             filtered_elements = []
             for elem in all_elements:
-                if self.extract_ID(self.get_child_node(elem, restriction[0])) == restriction[1]:
-                    filtered_elements.append(curr_elem)
+                children = self.get_child_node(elem, restriction[0])
+                if any([self.extract_ID(child) == restriction[1] for child in children]):
+                    filtered_elements.append(elem)
             all_elements = filtered_elements
         return all_elements
 
@@ -170,9 +171,15 @@ class Ontology():
             return ""
         element_id = element.getAttribute("rdf:ID") or element.getAttribute("rdf:resource") or element.getAttribute("rdf:about")
         element_id = element_id.split("#")[-1].split(";")[-1]
+        # print (element_id)
         if extract_label and element_id in self.mapping_dict:
             return self.mapping_dict[element_id]
+        if not element_id:
+            return element.firstChild.nodeValue
         return element_id.replace("UNDEFINED_", "").replace("DO_", "")
+
+    def extract_IDname(self, elements, arguments):
+        return [element.split("#")[1] for element in elements]
 
     def create_new_class_for_range(self, url, range_iri, range_label):
         '''

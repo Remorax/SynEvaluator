@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import os
 from pitfall_scanner import PitfallScanner
 app = Flask(__name__)
@@ -9,7 +9,7 @@ def show_results():
     print (request.files)
     file = request.files["input-b2"]
     if not file.filename:
-        return jsonify([])
+        return jsonify([{"Error": "No ontology uploaded."}])
     
     while request.form.get("subject-select-" + str(i), ""):
         Subject = request.form.get("subject-select-" + str(i))

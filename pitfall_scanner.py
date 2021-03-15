@@ -48,7 +48,7 @@ class PitfallScanner():
 			"Type": {"Elements": ["rdf:type"]},
 			"Domain": {"Elements": ["rdfs:domain"]},
 			"Range": {"Elements": ["rdfs:range"]},
-			"Subclass": {"Elements": ["rdfs:subclassOf"]},
+			"Subclass": {"Elements": ["rdfs:subClassOf"]},
 			"Annotation": {"Elements": ["rdfs:label", "lemon:LexicalEntry", "skos:prefLabel", "skos:altLabel", "rdfs:comment", "dc:description"]},
 			"Is Relation": {"Elements": ["is"]},
 			"Inverse Relation": {"Elements": ["owl:inverseOf"]},
@@ -57,7 +57,7 @@ class PitfallScanner():
 			"Disjoint Class": {"Elements": ["owl:disjointWith"]},
 			"Property Chain Axiom": {"Elements": ["owl:propertyChainAxiom"]},
 			"Language": {"Elements": ["xml:lang"]},
-			"ID": {"Elements": ["rdf:ID", "rdf:resource", "rdf:about"]},
+			"ID": {"Elements": ["rdf:ID", "rdf:resource", "rdf:about"], "Mappable": self.ontology.extract_IDname, "Arguments": []},
 			"Defined Namespace": {"Elements": ["xml:base"]},
 			"Used Namespace": {"Elements": ["rdf:ID", "rdf:resource", "rdf:about"], "Mappable": self.ontology.extract_namespace, "Arguments": []},
 			"Ontology(.owl/.rdf/.xml)": {"Elements": ["owl","rdf", "xml"]},
@@ -73,6 +73,7 @@ class PitfallScanner():
 			"Equality": equality,
 			"Inequality": inequality,
 			"Synonymy": synonymy,
+			"Dissimilarity": dissimilarity,
 			"Inverse": inverse,
 			"And": and_operator,
 			"Or": or_operator,
@@ -86,7 +87,7 @@ class PitfallScanner():
 			"Uniqueness": uniqueness,
 			"Contains Polysemes": contains_polysemes, 
 			"Contains Conjunctions": contains_conjunctions, 
-			"Contains Misc items": contains_misc_items
+			"Contains Misc Items": contains_misc_items
 		}
 
 		self.criticality_to_element = {"Critical": "High", "Intermediate": "Medium", "Minor": "Low"}
@@ -109,11 +110,10 @@ class PitfallScanner():
 			if not mapped_pred:
 				print ("{} is not a recognised value for predicate.".format(curr_pred))
 				continue
-
 			if statement_type == "Comparative":
-				results = mapped_pred(self.ontology, mapped_object, results, self.parse(start+1, end, subject))
-			else:
-				results = mapped_pred(self.ontology, results, mapped_object)
+				results = mapped_pred(self.ontology, mapped_object, results, self.parse(i+1, end, subject))
+				return results
+			results = mapped_pred(self.ontology, results, mapped_object)
 		return results
 
 	def scan(self):
@@ -128,7 +128,7 @@ class PitfallScanner():
 			self.pred_obj_list = list(zip(Predicate, Object))
 			curr_results = [self.parse(0, len(self.pred_obj_list), [subject]) for subject in self.subject_elements]
 			error_elements = [self.ontology.extract_ID(self.subject_elements[i]) for i,elem in enumerate(curr_results) if not elem]
+			error_elements = [elem for elem in error_elements if is_empty_str(elem)]
 			results.append((Criticality, error_elements))
-			print (Criticality)
 		results.sort(key=sort_compare, reverse=True)	 
 		return results
