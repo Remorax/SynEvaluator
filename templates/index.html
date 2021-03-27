@@ -49,7 +49,7 @@
 
         <div class="float-right my-3 mx-4">
             <button type="button" class="btn btn-success" id="add-pitfall">
-                <i class="fa fa-plus" aria-hidden="true"></i> Add pitfall 
+                <i class="fa fa-plus" aria-hidden="true"></i> Create rule
             </button>
         </div>
         <br><br><br>
@@ -57,7 +57,7 @@
             <div class="row" id="row-0">
                 <div class="col">
                     <div class="form-group">
-                        <select class="form-control subject-select" name="subject-select-0" id="subject-select-0">
+                        <select class="form-control subject-select" name="subject-select-0" id="subject-select-0"  style='width: 274.078px' >
                             <option selected>Select subject...</option>
                             <option>Ontology Header</option>
                             <option>Ontology Metadata</option>
@@ -74,7 +74,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col">
+<!--                 <div class="col">
                     <div class="form-group">
                         <select class="form-control predicate-select" name="predicate-select-0" id="predicate-select-0-0">
                             <option selected>Select predicate...</option>
@@ -106,10 +106,10 @@
                             <option>Property Chain Axiom</option>
                         </select>
                     </div>
-                </div>
-                <div class="col">
+                </div> -->
+                <div class="col" style="max-width: 220px">
                     <div class="form-group" id="criticality-div-0">
-                        <select class="form-control criticality-select" name="criticality-select-0" id="criticality-select-0">
+                        <select class="form-control criticality-select" name="criticality-select-0" id="criticality-select-0" style="width: 190px">
                             <option selected>Select rule priority...</option>
                             <option>Critical</option>
                             <option>Intermediate</option>
@@ -118,22 +118,30 @@
                     </div>
                 </div>
                 <div class="buttons-div" id="buttons-div-0">
-<!--                     <div class="dropdown" style="display: inline">
+                    <div class="dropdown" style="display: inline">
                         <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" id="add-cond-0" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-plus"></i>&nbsp; Add condition <span class="caret"></span>
+                            <i class="fa fa-plus"></i>&nbsp; Add <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="add-cond-0">
-                            <li id="add-eclause-0"><a class="dropdown-item" href="#">Extractive Clause</a></li>
-                            <li id="add-fclause-0"><a class="dropdown-item" href="#">Functional Clause</a></li>
-                            <li id="add-operator-0"><a class="dropdown-item" href="#">Operator Expression</a></li>
+                            <li id="add-eclause-0"><a class="dropdown-item exp-type" href="#">Extractive Clause</a></li>
+                            <li id="add-fclause-0"><a class="dropdown-item exp-type" href="#">Functional Clause</a></li>
+                            <li id="add-operator-0"><a class="dropdown-item exp-type" href="#">Operator Expression</a></li>
+
                         </ul>
-                    </div> -->
-                    <button class="btn btn-success add-cond" type="button" id="add-cond-0" >
-                        <i class="fa fa-plus"></i>&nbsp; Add condition
-                    </button>
-                    <button type="button" class="delete btn btn-danger" id="delete-0">
+                    </div>
+                    <div class="dropdown" style="display: inline">
+                        <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown" id="delete-0" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-trash"></i>&nbsp; Delete <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="delete-0">
+                            <li id="delete-cond-0"><a class="dropdown-item delete" href="#">Condition</a></li>
+                            <li id="delete-rule-0"><a class="dropdown-item delete" href="#">Rule</a></li>
+
+                        </ul>
+                    </div>
+<!--                     <button type="button" class="delete btn btn-danger" id="delete-0">
                         <i class="fa fa-trash"></i>&nbsp; Delete
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
