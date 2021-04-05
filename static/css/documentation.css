@@ -1,0 +1,10 @@
+.container-custom {
+   padding-left: 15px;
+   padding-right: 15px;
+}
+@media (min-width:1200px){
+  .container-custom {
+    margin-right: 0;
+    margin-left: calc(50vw - 700px);
+  }
+}

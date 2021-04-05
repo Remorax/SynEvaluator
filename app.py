@@ -31,6 +31,10 @@ def show_results():
 
     return render_template("results.html", pitfalls=modified_pitfalls, ontology_name=file.filename)
 
+@app.route('/documentation')
+def documentation():
+    return render_template("documentation.html")
+
 # A welcome message to test our server
 @app.route('/')
 def main():

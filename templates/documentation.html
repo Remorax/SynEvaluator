@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/documentation.css') }}">
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand">Documentation</a>
+		<div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="/">Home</a>
+					</li>
+				</ul>
+			</div>
+	</nav>
+	<div class="mx-4 mt-5 mb-4">
+		<h4>Section 1: Some preliminary definitions</h4>
+	</div>
+	<div class="container-custom">
+
+    	<div class="card-deck">
+            <div class="card">
+                <h5 class="card-header bg-primary text-white rounded-5">Ontological Element</h5>
+        		<div class="card-body">
+        			<p class="card-text">Refers to any element that forms a constituent part of an ontology, and as such can refer to its primary components (classes, individuals, properties), their related elements (subclasses, domains, ranges), annotations (labels, descriptions, comments) and attributes (ID, language, namespace).</p>
+        		</div>
+            </div>
+    		<div class="card">
+            <h5 class="card-header bg-primary text-white rounded-5">Rule</h5>
+    		  <div class="card-body">
+                <p class="card-text">Refers to a sequence of one or more clauses, optionally connected by one or more operator expressions that returns either one or more ontological elements, or a boolean value.</p>
+              </div>
+    		</div>
+            <div class="card">
+                <h5 class="card-header bg-primary text-white rounded-5">Subject</h5>
+              <div class="card-body">
+                <p class="card-text">Refers to an ontological element (typically primary components such as classes, individuals and properties), that is subjected to transformations carried out through sequential clauses to form a rule.</p>
+              </div>
+            </div>
+            <div class="card">
+                <h5 class="card-header bg-primary text-white rounded-5">Clause</h5>
+              <div class="card-body">
+                <p class="card-text">Refers to a transformation applied on an ontological element(s) to return either one or more ontological elements, or a boolean value.</p>
+              </div>
+            </div>
+            <div class="card">
+                <h5 class="card-header bg-primary text-white rounded-5">Operator Expression</h5>
+              <div class="card-body">
+                <p class="card-text">An expression used to compare and/or connect non-empty sequences of clauses to return a boolean value.</p>
+              </div>
+            </div>
+        </div>
+	</div>
+    <div class="mx-4 mt-5 mb-4">
+        <p class="text-left">In other words, a 'Subject' comprises the beginning and is the first keyword in a rule. It goes through a series of transformations as defined by sequences of clauses. These clause sequences can optionally be connected by operator expressions, which are pairs consisting of a 'Predicate' that indicates operator type, followed by an 'Operator' keyword. We illustrate these concepts using the example given below:</p>
+
+    </div>
+    <div class="mx-4 mt-5 mb-4">
+        <h4 class="pb-3">Section 2: Examples</h4>
+        <p class="text-left">We illustrate these concepts using the example given below:</p>
+        
+        <blockquote class="blockquote text-center">
+          <p class="mb-0"><span class="font-weight-bold">Example 1:</span> Property hasRelatedElement Domain usesLogicalOperator And hasRelatedElement Range</p>
+        </blockquote>
+
+        <p class="text-left"> Here, 'Property' is the 'Subject' of this rule, 'hasRelatedElement Domain' and 'hasRelatedElement Range' are clauses and 'usesLogicalOperator And' is the 'Operator Expression' used to connect Clauses. This rule checks whether properties in an ontology have domain and range elements or not. The 'hasRelatedElement Domain' clause carries out a transformation that uses the 'hasRelatedElement' predicate to extract 'Domain' elements. A similar transformation is carried out by the 'hasRelatedElement Range' clause that extracts 'Range' elements. The Operator Expression 'usesLogicalOperator And', which consists of the operator type-indicating predicate 'usesLogicalOperator' and the operator keyword 'And', necessitates non-null values from both 'hasRelatedElement Domain' and 'hasRelatedElement Range' clauses. This rule is evaluated for each instance of the Subject, (in this case: 'Property') and the Properties that return boolean 'False' are returned as ontological elements containing violations.
+
+        It is also possible to chain multiple clauses together by applying the transformation described by the current clause on the return value from a previous clause. This can be demonstrated using another example, as follows:  </p>
+
+        <blockquote class="blockquote text-center">
+          <p class="mb-0"><span class="font-weight-bold">Example 2:</span> Property hasRelatedElement Domain hasOntologicalProperty Uniqueness</p>
+        </blockquote>
+
+        <p class="text-left">
+            In this example, the clause 'hasRelatedElement Domain' returns Domain(s) of Properties, if it exists, and if so, checks for its 'Uniqueness' in the ontology using the 'hasOntologicalProperty' predicate. The evaluation of this rule would therefore return a boolean False for those 'Property' elements that have multiple domains. If a Domain element had not existed for one or more Property(s), an empty list would be returned, the rule evaluation would have stopped after the first clause and a rule violation would have been returned for those properties.
+        </p>
+    </div>
+    <div class="mx-4 mt-5 mb-4">
+        <h4 class="pb-3">Section 3: Types of clauses and operators</h4>
+        <p class="text-left"> Clauses themselves can be of of two types, namely:
+        </p>
+        <ol>
+            <li>
+                <span class="font-weight-bold">Extractive Clauses:</span> These clauses consist of (Predicate, Object) pairs that involve computing a transformation by executing the Predicate on the return value from the previous clause, using the Object as argument.
+            </li>
+            <li>
+                <span class="font-weight-bold">Functional Clauses:</span> These clauses consist of (Predicate, Function) pairs that involve computing a transformation by executing a Function of type described by Predicate on return value from previous clause.
+            </li>
+        </ol>
+        <p class="text-left">
+            Extractive Clauses typically return ontological elements that satisfy Predicate while Functional Clauses return Boolean values for elements that satisfy called Function. Structurally, Extractive Clauses use (Predicate, Object) pairs where Object describes the type of ontological element Predicate returns, assuming the element exists. Functional Clauses on the other hand use (Predicate, Function) triples where Predicate describes the type of Function called on these elements. Apart from differences in role and return value, this is one of the key structural differences between Extractive and Functional Clauses. A good example of both Extractive and Functional Clauses can be found in Example 2. 'hasRelatedElement Domain' is an Extractive Clause that uses 'hasRelatedElement' predicate to extract 'Domain' elements, while 'hasOntologicalProperty Uniqueness' is a Functional Clause that calls 'Uniqueness' function on ontological elements returned by previous clauses, with function type defined by Predicate "hasOntologicalProperty".
+
+            Operator Expressions also comprise of two categories of operators, namely: (a) Logical Operators and (b) Comparative Operators. Logical Operators, like 'And', 'Or' and 'Not' are used to create logical combinations of clauses to form a rule while Comparative Operators, like 'Equality', 'Inequality' and 'Synonymy' are used to compare return values of one or more clauses.
+        </p>
+        
+    </div>
+    <div class="mx-4 mt-5 mb-4">
+        <h4 class="pb-3">Section 4: Which clause to choose?</h4>
+        <div class="d-flex justify-content-center">
+            <img src="{{ url_for('static',filename='ActivityDiagram-SynEvalautor.jpeg') }}" class="img-fluid" alt="Responsive image">
+        </div>
+        We pack all of these different concepts to propose a coherent rule creation framework, as shown in the figure above. We first start with a Subject element (such as Classes, Individuals or Properties, among other elements). Then, based on the transformation we need to apply on the Subject, we can use one of the following expressions:
+        <ol>
+            <li>
+                <span class="font-weight-bold">Extractive Clause:</span> Can be used to extract new elements related to the Subject
+            </li>
+            <li>
+                <span class="font-weight-bold">Functional Clause:</span> Can be used to apply transformations on elements returned from previous clauses
+            </li>
+            <li>
+                <span class="font-weight-bold">Comparative Operator:</span> Can be used to compare clauses and return boolean values
+            </li>
+            <li>
+                <span class="font-weight-bold">Logical Operator:</span> Can be used to combine clauses and return boolean values
+            </li>
+        </ol>
+    </div>
+
+    
+
+</body>
+</html>
