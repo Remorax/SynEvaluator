@@ -46,8 +46,6 @@ google-resumable-media @ file:///home/conda/feedstock_root/build_artifacts/googl
 googleapis-common-protos @ file:///Users/runner/miniforge3/conda-bld/googleapis-common-protos-feedstock_1614497977094/work
 grpcio @ file:///Users/runner/miniforge3/conda-bld/grpcio_1614828561760/work
 gunicorn==20.1.0
-h5py @ file:///Users/vivek/Downloads/tensorflow_macos/arm64/h5py-2.10.0-cp38-cp38-macosx_11_0_arm64.whl
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1593328102638/work
 importlib-metadata @ file:///Users/runner/miniforge3/conda-bld/importlib-metadata_1614193742095/work
 inflection @ file:///home/conda/feedstock_root/build_artifacts/inflection_1598089801258/work
 install==1.3.4
