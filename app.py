@@ -21,17 +21,15 @@ def show_results():
 
     ontology = os.path.abspath(os.path.join("temp/", file.filename))
     file.save(ontology)
-        # for ontology in ontologies:
+
     scanner = PitfallScanner(ontology, all_pitfalls)
     curr_pitfalls = scanner.scan()
-            # counts = {"High": 0, "Medium": 0, "Low": 0}
-            # counts.update(Counter([el[0] for el in curr_pitfalls]))
-            # ontology_name = '.'.join(ontology.split('/')[-1].split('.')[:-1])
-            # final_data.append((ontology_name, list(counts.values())))
-            # pitfalls_dict[ontology_name] = curr_pitfalls
+    modified_pitfalls = []
+    for pitfall in curr_pitfalls:
+        color = "<div style='color: red; float:right; padding-right: 10px; font-weight:bold'>{}: {} Violations</div>".format(pitfall[0].upper(), len(pitfall[1]))
+        modified_pitfalls.append((color, pitfall[1], pitfall[2], pitfall[3]))
 
-    
-    return render_template("results.html", pitfalls=curr_pitfalls)
+    return render_template("results.html", pitfalls=modified_pitfalls, ontology_name=file.filename)
 
 # A welcome message to test our server
 @app.route('/')

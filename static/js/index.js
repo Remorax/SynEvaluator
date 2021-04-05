@@ -38,7 +38,6 @@ var priority_values = $.map($('#criticality-select-0 option') ,function(option) 
 $("#actions-header").width($("#buttons-div-0").width()); 
 
 $("#pitfalls-div").on('click', '.exp-type', function(){
-    console.log("here");
     var row_id = $(this).parent().attr('id').split("-").slice(-1)[0];
     var condition_id;
     try {
@@ -82,11 +81,8 @@ $("#pitfalls-div").on('click', '.exp-type', function(){
         </div>\
     </div>";
     $("#criticality-div-" + row_id).parent().before(new_cond);
-    console.log($("#object-select-"+row_id+"-"+condition_id).width());
-    console.log($("#predicate-select-"+row_id+"-"+condition_id).width());
     if (condition_id > 1)
         $("#subject-select-" + row_id).css("width", '');
-    console.log($("#subject-select-"+row_id).width());
     
 });
 

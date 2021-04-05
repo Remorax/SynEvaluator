@@ -5,7 +5,6 @@ import os
 
 def sort_compare(key):
 	importance_dict = {"Critical": 3, "Intermediate": 2, "Minor": 1 }
-	print (key)
 	return importance_dict[key[0]]
 
 class PitfallScanner():
@@ -129,6 +128,8 @@ class PitfallScanner():
 			curr_results = [self.parse(0, len(self.pred_obj_list), [subject]) for subject in self.subject_elements]
 			error_elements = [self.ontology.extract_ID(self.subject_elements[i]) for i,elem in enumerate(curr_results) if not elem]
 			error_elements = [elem for elem in error_elements if is_empty_str(elem)]
-			results.append((Criticality, error_elements))
+			pitfall_stringified = Subject + " " + " ".join([" ".join(clause) for clause in zip(Predicate, Object)])
+			pitfall_id = "Rule " + str(idx+1)
+			results.append((Criticality, error_elements, pitfall_id, pitfall_stringified))
 		results.sort(key=sort_compare, reverse=True)	 
 		return results
