@@ -1,4 +1,3 @@
-import tensorflow_hub as hub
 from scipy.spatial.distance import cosine
 from re import finditer, split
 from xml.dom import minidom
