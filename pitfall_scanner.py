@@ -3,10 +3,6 @@ from helper import *
 from glob import glob
 import os
 
-def sort_compare(key):
-	importance_dict = {"Critical": 3, "Intermediate": 2, "Minor": 1 }
-	return importance_dict[key[0]]
-
 class PitfallScanner():
 	"""docstring for PitfallScanner"""
 	def __init__(self, ontology_path, pitfalls):
@@ -131,5 +127,4 @@ class PitfallScanner():
 			pitfall_stringified = Subject + " " + " ".join([" ".join(clause) for clause in zip(Predicate, Object)])
 			pitfall_id = "Rule " + str(idx+1)
 			results.append((Criticality, error_elements, pitfall_id, pitfall_stringified))
-		results.sort(key=sort_compare, reverse=True)	 
 		return results
