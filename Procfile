@@ -1,1 +1,1 @@
-web: gunicorn app:OntoEvaluator
+web: gunicorn app:app
